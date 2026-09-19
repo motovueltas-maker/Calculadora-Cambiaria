@@ -86,7 +86,6 @@ else:
         """
         )
 
-        # Usamos pestañas para cambiar el sentido del cálculo
         tab_bs_to_usd, tab_usd_to_bs = st.tabs(["💵 De Bs. a USD", "🇻🇪 De USD a Bs."])
 
         # Sentido 1: Tengo Bolívares -> ¿Cuántos USD puedo comprar?
@@ -126,7 +125,7 @@ else:
     # ==========================================
     with col2:
         st.subheader("🟡 2. Depósito Fiat en Binance")
-        st.caption("Calcula cuánto puedes depositar según la comisión de tu banco.")
+        st.caption("Calcula el monto neto a recibir tras comisiones del banco y de Binance.")
 
         usd_disponibles = st.number_input(
             "USD disponibles en tu cuenta bancaria:",
@@ -144,20 +143,28 @@ else:
             value=2.55,
             step=0.05,
             format="%.2f",
-            help="Edita este porcentaje según las políticas de tu banco.",
+            help="Porcentaje que cobra tu banco local por la transferencia/débito.",
             key="comision_banco_input",
         )
 
-        if usd_disponibles > 0:
-            factor_comision = 1 + (comision_banco_pct / 100)
-            usd_netos_binance = usd_disponibles / factor_comision
-            comision_cobrada = usd_disponibles - usd_netos_binance
+        COMISION_BINANCE_PCT = 4.1  # 4.1% fijado por Binance
 
-            st.success(f"📥 Puedes ingresar a Binance: **${usd_netos_binance:,.2f} USD**")
+        if usd_disponibles > 0:
+            # 1. Descuento del banco local
+            factor_banco = 1 + (comision_banco_pct / 100)
+            monto_post_banco = usd_disponibles / factor_banco
+            comision_banco = usd_disponibles - monto_post_banco
+
+            # 2. Descuento del 4.1% de Binance sobre el saldo a ingresar
+            comision_binance = monto_post_banco * (COMISION_BINANCE_PCT / 100)
+            usd_netos_binance = monto_post_banco - comision_binance
+
+            st.success(f"📥 Neto a recibir en Binance: **${usd_netos_binance:,.2f} USD**")
             st.markdown(
                 f"""
-            * **Monto Total Debitados:** `${usd_disponibles:,.2f} USD`
-            * **Comisión del Banco ({comision_banco_pct}%):** `${comision_cobrada:,.2f} USD`
-            * **Neto a Recibir en Binance:** `${usd_netos_binance:,.2f} USD`
+            * **Monto Debitado:** `${usd_disponibles:,.2f} USD`
+            * **Comisión Banco ({comision_banco_pct}%):** `${comision_banco:,.2f} USD`
+            * **Comisión Binance (4.1%):** `${comision_binance:,.2f} USD`
+            * **Total Neto Acreditado:** `${usd_netos_binance:,.2f} USD`
             """
             )
