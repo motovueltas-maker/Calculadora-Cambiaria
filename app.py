@@ -11,6 +11,17 @@ st.set_page_config(
 
 st.title("🧮 Calculadora de Intervención & Depósito Fiat")
 
+# --- OCULTAR MENÚ DE STREAMLIT Y ENLACES A GITHUB ---
+hide_streamlit_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .stAppHeader {display: none;}
+    </style>
+    """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 
 # --- FUNCIÓN PARA OBTENER TASA BCV AUTOMÁTICA ---
 def obtener_tasa_bcv():
