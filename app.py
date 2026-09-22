@@ -148,20 +148,20 @@ else:
         ["💳 Pasarela Binance Bpay", "💸 Transferencia Interbancaria (0.3%)"]
     )
 
-    # Pestaña A: Cálculo inverso para Bpay de Binance
+    # Pestaña A: Cálculo directo ingresando el disponible en USD para Bpay
     with tab_bpay:
       st.caption(
-          "Calcula cuánto debes ingresar en Bpay según tu neto deseado y"
-          " comisiones."
+          "Ingresa tu saldo disponible en USD y el porcentaje de comisión para"
+          " saber qué monto colocar en Bpay:"
       )
 
-      usd_neto_deseado = st.number_input(
-          "USD netos que deseas recibir en Binance:",
+      usd_disponible = st.number_input(
+          "Monto disponible en la cuenta (USD):",
           min_value=0.0,
           value=500.0,
           step=10.0,
           format="%.2f",
-          key="usd_neto_input",
+          key="usd_disp_input",
       )
 
       comision_banco_pct = st.number_input(
@@ -177,28 +177,28 @@ else:
 
       COMISION_BINANCE_PCT = 4.1  # 4.1% fijado por Binance
 
-      if usd_neto_deseado > 0:
-        # Inverso: Para que llegue 'usd_neto_deseado' después del 4.1% de Binance:
-        # monto_post_banco * (1 - 0.041) = usd_neto_deseado
-        monto_post_banco = usd_neto_deseado / (1 - (COMISION_BINANCE_PCT / 100))
-        comision_binance = monto_post_banco - usd_neto_deseado
-
-        # Y para que resulte 'monto_post_banco' después de la comisión del banco local:
-        # monto_debitado / factor_banco = monto_post_banco  =>  monto_debitado = monto_post_banco * factor_banco
+      if usd_disponible > 0:
+        # Si tienes 'usd_disponible' en la cuenta, eso incluye el monto a ingresar en Bpay + comisión del banco local.
+        # Es decir: monto_bpay * (1 + comision_banco_pct / 100) = usd_disponible
+        # Por lo tanto, el monto que debes tipear en Bpay es:
         factor_banco = 1 + (comision_banco_pct / 100)
-        monto_debitado = monto_post_banco * factor_banco
-        comision_banco = monto_debitado - monto_post_banco
+        monto_bpay = usd_disponible / factor_banco
+        comision_banco = usd_disponible - monto_bpay
+
+        # De ese monto que entra a Binance, se descuenta el 4.1% de Binance:
+        comision_binance = monto_bpay * (COMISION_BINANCE_PCT / 100)
+        usd_neto_recibir = monto_bpay - comision_binance
 
         st.success(
-            "🎯 Debes ingresar en Bpay de Binance: **$"
-            f" {monto_debitado:,.2f} USD**"
+            "🎯 Monto exacto a colocar en Bpay de Binance: **$"
+            f" {monto_bpay:,.2f} USD**"
         )
         st.markdown(
             f"""
-            * **Monto a Ingresar en Bpay:** `${monto_debitado:,.2f} USD`
+            * **Monto a Colocar en Bpay:** `${monto_bpay:,.2f} USD`
             * **Comisión Banco ({comision_banco_pct}%):** `${comision_banco:,.2f} USD`
             * **Comisión Binance (4.1%):** `${comision_binance:,.2f} USD`
-            * **Total Neto a Recibir:** `${usd_neto_deseado:,.2f} USD`
+            * **Total Neto que Llegará a Binance:** `${usd_neto_recibir:,.2f} USD`
             """
         )
 
@@ -220,16 +220,13 @@ else:
       COMISION_INTERBANCARIA_PCT = 0.3  # 0.3%
 
       if disponible_cuenta_bs > 0:
-        # Si tienes X disponible y el banco debita el 0.3% sobre la transferencia (o del total):
-        # Monto a transferir (T) tal que T * (1 + 0.003) = disponible  ó  si se descuenta del disponible:
-        # Lo común al raspar/vaciar cuenta con comisión deducida del monto: Transferir Monto = Disponible / (1 + 0.003)
-        # O si el banco cobra el 0.3% adicional sobre el monto enviado:
         factor_inter = 1 + (COMISION_INTERBANCARIA_PCT / 100)
         monto_a_transferir = disponible_cuenta_bs / factor_inter
         comision_interbancaria = disponible_cuenta_bs - monto_a_transferir
 
         st.success(
-            "💸 Monto exacto a transferir: **Bs. {monto_a_transferir:,.2f}**"
+            "💸 Monto exacto a transferir: **Bs."
+            f" {monto_a_transferir:,.2f}**"
         )
         st.markdown(
             f"""
