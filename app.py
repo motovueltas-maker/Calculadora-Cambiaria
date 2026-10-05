@@ -56,6 +56,9 @@ def obtener_tasa_bcv():
         pass
     return 871.3689
 
+# --- EJECUCIÓN DE LA FUNCIÓN ---
+tasa_api = obtener_tasa_bcv()
+
 # --- ENCABEZADO Y TASA BANCARIA ---
 st.title("💱 Calculadora Cambiaria")
 
