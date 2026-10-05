@@ -44,7 +44,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- FUNCIÓN TASA BCV AUTOMÁTICA ---
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=600)
 def obtener_tasa_bcv():
     try:
         url = "https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv"
@@ -54,9 +54,7 @@ def obtener_tasa_bcv():
             return float(data['monedas']['usd']['promedio'])
     except Exception:
         pass
-    return 860.1753
-
-tasa_api = obtener_tasa_bcv()
+    return 871.3689
 
 # --- ENCABEZADO Y TASA BANCARIA ---
 st.title("💱 Calculadora Cambiaria")
