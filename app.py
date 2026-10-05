@@ -85,21 +85,25 @@ with st.expander("⚡ **Operativa de Intervención (Compra/Venta)**", expanded=T
 
     st.divider()
 
-    # Sub-operaciones de cuenta/tarjeta
-    col_a, col_b = st.columns(2)
-    with col_a:
-        usd_tarjeta = st.number_input("USD en Tarjeta:", value=500.00, step=10.0)
-        comision_banco = st.number_input("% Com. Banco:", value=2.51, step=0.1) / 100
-        usd_pasarela = (usd_tarjeta - 1.50) / (1 + comision_banco) if usd_tarjeta > 1.50 else 0.0
-        st.success(f"Pasarela BPAY: **${usd_pasarela:.2f}**")
-
-    with col_b:
-        bs_banco = st.number_input("Bs. Totales en Banco:", value=200000.00, step=1000.0)
-        bs_transferir = bs_banco / 1.003
-        st.success(f"Transferir: **Bs. {bs_transferir:,.2f}**")
+    # Cálculo Tarjeta BPAY
+    usd_tarjeta = st.number_input("USD en Tarjeta:", value=500.00, step=10.0)
+    comision_banco = st.number_input("% Com. Banco:", value=2.51, step=0.1) / 100
+    usd_pasarela = (usd_tarjeta - 1.50) / (1 + comision_banco) if usd_tarjeta > 1.50 else 0.0
+    st.success(f"Pasarela BPAY: **${usd_pasarela:.2f}**")
 
 # ==========================================
-# SECCIÓN 2: CONVERSIÓN SIMPLE BCV
+# SECCIÓN 2: VACIAR CUENTA / TRANSFERIR (INDEPENDIENTE)
+# ==========================================
+with st.expander("🏦 **Vaciar Cuenta / Transferir Interbancario (Comisión 0.3%)**", expanded=False):
+    bs_banco = st.number_input("Bs. Totales que tienes en el Banco:", value=200000.00, step=1000.0, key="v_banco")
+    bs_transferir = bs_banco / 1.003
+    comision_aplicada = bs_banco - bs_transferir
+    
+    st.success(f"Monto exacto a transferir: **Bs. {bs_transferir:,.2f}**")
+    st.caption(f"Comisión estimada (0.3%): Bs. {comision_aplicada:,.2f}")
+
+# ==========================================
+# SECCIÓN 3: CONVERSIÓN SIMPLE BCV
 # ==========================================
 with st.expander("💱 **Conversión Directa a Tasa BCV**", expanded=False):
     col_c1, col_c2 = st.columns(2)
@@ -111,7 +115,7 @@ with st.expander("💱 **Conversión Directa a Tasa BCV**", expanded=False):
         st.info(f"Equivale a: **${(bs_directo / tasa_bcv if tasa_bcv > 0 else 0.0):.2f} USD**")
 
 # ==========================================
-# SECCIÓN 3: UTILIDAD P2P BINANCE
+# SECCIÓN 4: UTILIDAD P2P BINANCE
 # ==========================================
 with st.expander("📈 **Calculadora de Utilidad P2P**", expanded=False):
     usd_comprados_banco = st.number_input("USD Comprados en Banco:", value=500.00, step=10.0, key="u_banco")
