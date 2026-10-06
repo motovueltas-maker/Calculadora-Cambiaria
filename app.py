@@ -88,9 +88,9 @@ st.caption(f"Tasa Intervención (BCV + 0.5%): **Bs. {tasa_intervencion:,.4f}**")
 # SECCIÓN 1: OPERATIVA DE INTERVENCIÓN
 # ==========================================
 with st.expander("⚡ **Operativa de Intervención (Compra/Venta)**", expanded=True):
-    opcion = st.radio("¿Qué deseas calcular?", ["Comprar USD (Saber cuántos Bs requiero)", "Vender Bs (Saber cuántos USD obtengo)"], key="op_interv")
-    
-    if "Comprar USD" in opcion:
+    opcion = st.radio("¿Qué deseas calcular?", ["Quiero USD", "Tengo Bs"], key="op_interv")
+
+    if opcion == "Quiero USD":
         usd_deseados = st.number_input("USD que deseas obtener:", value=100.00, step=10.0)
         bs_necesarios = usd_deseados * tasa_intervencion
         st.info(f"Requieres: **Bs. {bs_necesarios:,.2f}**")
