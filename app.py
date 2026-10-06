@@ -43,24 +43,40 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- FUNCIÓN TASA BCV AUTOMÁTICA ---
-@st.cache_data(ttl=600)
+# --- FUNCIÓN TASA BCV AUTOMÁTICA CON DOBLE FUENTE Y FALLBACK 0 ---
 def obtener_tasa_bcv():
+    # Intento 1: PyDolarVenezuela
     try:
-        url = "https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv"
-        response = requests.get(url, timeout=5)
-        if response.status_code == 200:
-            data = response.json()
+        url1 = "https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv"
+        res1 = requests.get(url1, timeout=4)
+        if res1.status_code == 200:
+            data = res1.json()
             return float(data['monedas']['usd']['promedio'])
     except Exception:
         pass
-    return 871.3689
+
+    # Intento 2: DolarApi (Respaldo)
+    try:
+        url2 = "https://ve.dolarapi.com/v1/dolares/oficial"
+        res2 = requests.get(url2, timeout=4)
+        if res2.status_code == 200:
+            data = res2.json()
+            return float(data['promedio'])
+    except Exception:
+        pass
+
+    # Si todo falla, devuelve 0 para no usar datos viejos por error
+    return 0.0
 
 # --- EJECUCIÓN DE LA FUNCIÓN ---
 tasa_api = obtener_tasa_bcv()
 
 # --- ENCABEZADO Y TASA BANCARIA ---
 st.title("💱 Calculadora Cambiaria")
+
+# Si la tasa falló (es 0.0), mostramos alerta visible
+if tasa_api == 0.0:
+    st.error("⚠️ No se pudo obtener la tasa oficial en línea. Por favor, ingresa el valor del BCV manualmente.")
 
 # Campo editable para la tasa BCV
 tasa_bcv = st.number_input("Tasa BCV del día (Bs.):", value=tasa_api, step=0.01, format="%.4f")
