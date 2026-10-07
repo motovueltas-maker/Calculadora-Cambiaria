@@ -137,21 +137,31 @@ with st.expander("📈 **Calculadora de Utilidad P2P**", expanded=False):
     usd_comprados_banco = st.number_input("USD Comprados en Banco:", value=500.00, step=10.0, key="u_banco")
     comision_banco_u = st.number_input("% Comisión Banco Origen:", value=1.50, step=0.1, key="u_com_b") / 100
     comision_bpay_u = st.number_input("% Pasarela BPay/Binance:", value=4.10, step=0.1, key="u_com_bp") / 100
-    tasa_p2p = st.number_input("Tasa Venta P2P (Bs.):", value=967.00, step=0.5, format="%.2f")
-
-    # Cálculos de utilidad
+    
+    # 1. Cálculos de Inversión y USDT Netos
     bs_gastados = usd_comprados_banco * tasa_intervencion
     usd_netos_tarjeta = (usd_comprados_banco - 1.50) / (1 + comision_banco_u) if usd_comprados_banco > 1.50 else 0.0
     usdt_recibidos = usd_netos_tarjeta * (1 - comision_bpay_u) if usd_netos_tarjeta > 0 else 0.0
+    
+    # 2. DATOS DE IMPACTO INMEDIATO: Costo efectivo por USDT en Bs.
+    costo_por_usdt = (bs_gastados / usdt_recibidos) if usdt_recibidos > 0 else 0.0
+
+    st.markdown("---")
+    st.metric(
+        label="🎯 Costo Real de 1 USDT en Binance",
+        value=f"Bs. {costo_por_usdt:,.2f} / USDT",
+        help="Este es tu punto de equilibrio: cualquier precio P2P por encima de este valor es ganancia neta."
+    )
+    st.caption(f"• Inversión total: **Bs. {bs_gastados:,.2f}** | Recibes en Binance: **{usdt_recibidos:,.2f} USDT**")
+    st.markdown("---")
+
+    # 3. Tasa P2P y Resultados de Utilidad
+    tasa_p2p = st.number_input("Tasa Venta P2P (Bs.):", value=967.00, step=0.5, format="%.2f")
+
     bs_retorno_p2p = usdt_recibidos * tasa_p2p
     utilidad_bs = bs_retorno_p2p - bs_gastados
     utilidad_usd_bcv = utilidad_bs / tasa_bcv if tasa_bcv > 0 else 0.0
 
-    st.markdown("---")
-    st.write(f"• **Inversión inicial:** Bs. {bs_gastados:,.2f}")
-    st.write(f"• **USDT a recibir en Binance:** {usdt_recibidos:.2f} USDT")
-    st.write(f"• **Retorno P2P:** Bs. {bs_retorno_p2p:,.2f}")
-    
     col_u1, col_u2 = st.columns(2)
     with col_u1:
         st.metric("Ganancia (Bs.)", f"Bs. {utilidad_bs:,.2f}")
