@@ -4,44 +4,37 @@ import requests
 # Configuración de página
 st.set_page_config(page_title="Calculadora Cambiaria", layout="centered", initial_sidebar_state="collapsed")
 
-# --- CSS PARA ESTILO MÓVIL MODERNO Y LIMPIO ---
+# --- CSS PARA ESTILO MÓVIL Y OCULTAR ELEMENTOS SUPERIORES ---
 st.markdown("""
     <style>
+        /* Ocultar barra superior, menú de Streamlit, footer y GitHub */
+        #MainMenu {visibility: hidden;}
+        header {visibility: hidden;}
+        footer {visibility: hidden;}
+        div[data-testid="stDecoration"] {display: none;}
+        
+        /* Ocultar apariciones de barras superiores adicionales */
+        .stAppHeader {display: none !important;}
+        div[data-testid="stStatusWidget"] {visibility: hidden;}
+        .stAppDeployButton {display: none;}
+
         .block-container { 
             padding-top: 1rem !important; 
             padding-bottom: 1rem !important; 
             padding-left: 0.8rem !important; 
             padding-right: 0.8rem !important; 
         }
-        
-        /* Tarjeta de Tasa Principal */
-        .rate-card {
-            background-color: #1E293B;
-            color: #FFFFFF;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 12px;
-        }
-        .rate-value {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #38BDF8;
-        }
-
-        /* Ajuste de inputs para que se vean ordenados */
         .stNumberInput label {
             font-size: 0.85rem !important;
             font-weight: 600 !important;
         }
-        
-        /* Botones y contenedores */
         .stAlert {
             padding: 0.5rem !important;
             font-size: 0.9rem !important;
         }
     </style>
 """, unsafe_allow_html=True)
+
 # --- FUNCIÓN TASA BCV AUTOMÁTICA CON DOBLE FUENTE Y FALLBACK 0 ---
 def obtener_tasa_bcv():
     # Intento 1: PyDolarVenezuela
