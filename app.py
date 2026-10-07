@@ -161,9 +161,14 @@ with st.expander("📈 **Calculadora de Utilidad P2P**", expanded=False):
     bs_retorno_p2p = usdt_recibidos * tasa_p2p
     utilidad_bs = bs_retorno_p2p - bs_gastados
     utilidad_usd_bcv = utilidad_bs / tasa_bcv if tasa_bcv > 0 else 0.0
+    
+    # Porcentaje de ganancia sobre la inversión inicial (%)
+    porcentaje_utilidad = (utilidad_bs / bs_gastados * 100) if bs_gastados > 0 else 0.0
 
-    col_u1, col_u2 = st.columns(2)
+    col_u1, col_u2, col_u3 = st.columns(3)
     with col_u1:
         st.metric("Ganancia (Bs.)", f"Bs. {utilidad_bs:,.2f}")
     with col_u2:
         st.metric("Ganancia (USD BCV)", f"${utilidad_usd_bcv:,.2f}")
+    with col_u3:
+        st.metric("% Utilidad", f"{porcentaje_utilidad:.2f}%")
