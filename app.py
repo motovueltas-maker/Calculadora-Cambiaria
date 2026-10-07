@@ -42,7 +42,6 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
-
 # --- FUNCIÓN TASA BCV AUTOMÁTICA CON DOBLE FUENTE Y FALLBACK 0 ---
 def obtener_tasa_bcv():
     # Intento 1: PyDolarVenezuela
