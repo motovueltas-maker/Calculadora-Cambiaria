@@ -94,10 +94,13 @@ with st.expander("⚡ **Operativa de Intervención (Compra/Venta)**", expanded=T
     st.divider()
 
     # Cálculo Tarjeta BPAY
-    usd_tarjeta = st.number_input("USD en Tarjeta:", value=500.00, step=10.0)
-    comision_banco = st.number_input("% Com. Banco:", value=2.51, step=0.1) / 100
+    usd_tarjeta = st.number_input("USD en Tarjeta:", value=500.00, step=10.0, key="interv_usd_tarjeta")
+    comision_banco = st.number_input("% Com. Banco:", value=2.51, step=0.1, key="interv_com_banco") / 100
+    
+    # Cálculo exacto restando la tarifa fija de $1.50 y dividiendo entre el factor de comisión (1 + porcentaje)
     usd_pasarela = (usd_tarjeta - 1.50) / (1 + comision_banco) if usd_tarjeta > 1.50 else 0.0
-    st.success(f"Pasarela BPAY: **${usd_pasarela:.2f}**")
+    
+    st.success(f"Pasarela BPAY: **${usd_pasarela:,.2f}**")
 
 # ==========================================
 # SECCIÓN 2: VACIAR CUENTA / TRANSFERIR (INDEPENDIENTE)
